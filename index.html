@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare - Medical Shop Billing System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .bill-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: white;
+        }
+        
+        .bill-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .bill-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .bill-items table {
+            width: 100%;
+        }
+        
+        .bill-total {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .print-btn {
+            background-color: #27ae60;
+        }
+        
+        .print-btn:hover {
+            background-color: #219653;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MediCare - Medical Shop Billing System</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('customers')">Customers</button>
+            <button class="tab" onclick="openTab('medicines')">Medicines</button>
+            <button class="tab" onclick="openTab('billing')">Billing</button>
+            <button class="tab" onclick="openTab('bills')">Bill History</button>
+        </div>
+        
+        <!-- Customers Tab -->
+        <div id="customers" class="tab-content active">
+            <h2>Customer Management</h2>
+            
+            <div class="form-group">
+                <label for="customer-search">Search Customers:</label>
+                <input type="text" id="customer-search" placeholder="Enter customer name or phone..." oninput="searchCustomers()">
+            </div>
+            
+            <div id="customer-form">
+                <div class="form-group">
+                    <label for="customer-name">Name:</label>
+                    <input type="text" id="customer-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer-phone">Phone:</label>
+                    <input type="text" id="customer-phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer-email">Email:</label>
+                    <input type="email" id="customer-email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="customer-address">Address:</label>
+                    <input type="text" id="customer-address">
+                </div>
+                
+                <button onclick="saveCustomer()">Save Customer</button>
+                <button class="delete-btn" onclick="clearCustomerForm()">Clear</button>
+                
+                <div id="customer-message" class="success-message"></div>
+            </div>
+            
+            <table id="customer-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="customer-list">
+                    <!-- Customer data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Medicines Tab -->
+        <div id="medicines" class="tab-content">
+            <h2>Medicine Inventory</h2>
+            
+            <div class="form-group">
+                <label for="medicine-search">Search Medicines:</label>
+                <input type="text" id="medicine-search" placeholder="Enter medicine name or code..." oninput="searchMedicines()">
+            </div>
+            
+            <div id="medicine-form">
+                <div class="form-group">
+                    <label for="medicine-name">Name:</label>
+                    <input type="text" id="medicine-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicine-code">Code:</label>
+                    <input type="text" id="medicine-code" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicine-price">Price:</label>
+                    <input type="number" id="medicine-price" min="0" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicine-stock">Stock Quantity:</label>
+                    <input type="number" id="medicine-stock" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="medicine-expiry">Expiry Date:</label>
+                    <input type="date" id="medicine-expiry">
+                </div>
+                
+                <button onclick="saveMedicine()">Save Medicine</button>
+                <button class="delete-btn" onclick="clearMedicineForm()">Clear</button>
+                
+                <div id="medicine-message" class="success-message"></div>
+            </div>
+            
+            <table id="medicine-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Expiry</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="medicine-list">
+                    <!-- Medicine data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Billing Tab -->
+        <div id="billing" class="tab-content">
+            <h2>Generate Bill</h2>
+            
+            <div class="form-group">
+                <label for="bill-customer">Customer:</label>
+                <select id="bill-customer" onchange="loadCustomerDetails()">
+                    <option value="">Select Customer</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="bill-date">Date:</label>
+                <input type="date" id="bill-date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="bill-medicine">Add Medicine:</label>
+                <select id="bill-medicine">
+                    <option value="">Select Medicine</option>
+                </select>
+                <button onclick="addMedicineToBill()">Add</button>
+            </div>
+            
+            <table id="bill-items-table">
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bill-items-list">
+                    <!-- Bill items will be inserted here -->
+                </tbody>
+            </table>
+            
+            <div class="bill-total">
+                <p>Subtotal: ₹<span id="bill-subtotal">0.00</span></p>
+                <p>Discount: ₹<span id="bill-discount">0.00</span></p>
+                <p>Total: ₹<span id="bill-total">0.00</span></p>
+            </div>
+            
+            <div class="form-group">
+                <label for="bill-discount-input">Discount (₹):</label>
+                <input type="number" id="bill-discount-input" min="0" step="0.01" value="0" onchange="calculateBillTotal()">
+            </div>
+            
+            <button onclick="generateBill()">Generate Bill</button>
+            <button class="delete-btn" onclick="clearBill()">Clear Bill</button>
+            
+            <div id="bill-message" class="success-message"></div>
+        </div>
+        
+        <!-- Bill History Tab -->
+        <div id="bills" class="tab-content">
+            <h2>Bill History</h2>
+            
+            <div class="form-group">
+                <label for="bill-history-search">Search Bills:</label>
+                <input type="text" id="bill-history-search" placeholder="Enter customer name or bill number..." oninput="searchBills()">
+            </div>
+            
+            <table id="bill-history-table">
+                <thead>
+                    <tr>
+                        <th>Bill No.</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bill-history-list">
+                    <!-- Bill history will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Data storage
+        let customers = JSON.parse(localStorage.getItem('medicalShopCustomers')) || [];
+        let medicines = JSON.parse(localStorage.getItem('medicalShopMedicines')) || [];
+        let bills = JSON.parse(localStorage.getItem('medicalShopBills')) || [];
+        let currentBillItems = [];
+        let editingCustomerId = null;
+        let editingMedicineId = null;
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date as default for bill date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bill-date').value = today;
+            
+            // Load data into tables
+            renderCustomerTable();
+            renderMedicineTable();
+            renderBillHistoryTable();
+            
+            // Populate customer dropdown in billing tab
+            populateCustomerDropdown();
+            
+            // Populate medicine dropdown in billing tab
+            populateMedicineDropdown();
+        });
+        
+        // Tab navigation
+        function openTab(tabName) {
+            const tabs = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            const tabButtons = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Customer functions
+        function saveCustomer() {
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const email = document.getElementById('customer-email').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            
+            if (!name || !phone) {
+                showMessage('customer-message', 'Name and Phone are required!', 'error');
+                return;
+            }
+            
+            if (editingCustomerId !== null) {
+                // Update existing customer
+                const index = customers.findIndex(c => c.id === editingCustomerId);
+                if (index !== -1) {
+                    customers[index] = {
+                        id: editingCustomerId,
+                        name,
+                        phone,
+                        email,
+                        address
+                    };
+                }
+                showMessage('customer-message', 'Customer updated successfully!', 'success');
+            } else {
+                // Add new customer
+                const newCustomer = {
+                    id: Date.now().toString(),
+                    name,
+                    phone,
+                    email,
+                    address
+                };
+                customers.push(newCustomer);
+                showMessage('customer-message', 'Customer added successfully!', 'success');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('medicalShopCustomers', JSON.stringify(customers));
+            
+            // Refresh tables and dropdowns
+            renderCustomerTable();
+            populateCustomerDropdown();
+            clearCustomerForm();
+        }
+        
+        function editCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            if (customer) {
+                editingCustomerId = customer.id;
+                document.getElementById('customer-name').value = customer.name;
+                document.getElementById('customer-phone').value = customer.phone;
+                document.getElementById('customer-email').value = customer.email || '';
+                document.getElementById('customer-address').value = customer.address || '';
+                
+                // Scroll to form
+                document.getElementById('customer-form').scrollIntoView();
+            }
+        }
+        
+        function deleteCustomer(id) {
+            if (confirm('Are you sure you want to delete this customer?')) {
+                customers = customers.filter(c => c.id !== id);
+                localStorage.setItem('medicalShopCustomers', JSON.stringify(customers));
+                renderCustomerTable();
+                populateCustomerDropdown();
+                showMessage('customer-message', 'Customer deleted successfully!', 'success');
+            }
+        }
+        
+        function clearCustomerForm() {
+            document.getElementById('customer-name').value = '';
+            document.getElementById('customer-phone').value = '';
+            document.getElementById('customer-email').value = '';
+            document.getElementById('customer-address').value = '';
+            editingCustomerId = null;
+            document.getElementById('customer-message').textContent = '';
+        }
+        
+        function renderCustomerTable() {
+            const customerList = document.getElementById('customer-list');
+            customerList.innerHTML = '';
+            
+            customers.forEach(customer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.phone}</td>
+                    <td>${customer.email || '-'}</td>
+                    <td>${customer.address || '-'}</td>
+                    <td>
+                        <button onclick="editCustomer('${customer.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteCustomer('${customer.id}')">Delete</button>
+                    </td>
+                `;
+                customerList.appendChild(row);
+            });
+        }
+        
+        function searchCustomers() {
+            const searchTerm = document.getElementById('customer-search').value.toLowerCase();
+            const filteredCustomers = customers.filter(customer => 
+                customer.name.toLowerCase().includes(searchTerm) || 
+                customer.phone.includes(searchTerm)
+            );
+            
+            const customerList = document.getElementById('customer-list');
+            customerList.innerHTML = '';
+            
+            filteredCustomers.forEach(customer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.phone}</td>
+                    <td>${customer.email || '-'}</td>
+                    <td>${customer.address || '-'}</td>
+                    <td>
+                        <button onclick="editCustomer('${customer.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteCustomer('${customer.id}')">Delete</button>
+                    </td>
+                `;
+                customerList.appendChild(row);
+            });
+        }
+        
+        // Medicine functions
+        function saveMedicine() {
+            const name = document.getElementById('medicine-name').value.trim();
+            const code = document.getElementById('medicine-code').value.trim();
+            const price = parseFloat(document.getElementById('medicine-price').value);
+            const stock = parseInt(document.getElementById('medicine-stock').value);
+            const expiry = document.getElementById('medicine-expiry').value;
+            
+            if (!name || !code || isNaN(price) || isNaN(stock)) {
+                showMessage('medicine-message', 'Name, Code, Price and Stock are required!', 'error');
+                return;
+            }
+            
+            if (price <= 0 || stock < 0) {
+                showMessage('medicine-message', 'Price must be positive and stock cannot be negative!', 'error');
+                return;
+            }
+            
+            if (editingMedicineId !== null) {
+                // Update existing medicine
+                const index = medicines.findIndex(m => m.id === editingMedicineId);
+                if (index !== -1) {
+                    medicines[index] = {
+                        id: editingMedicineId,
+                        name,
+                        code,
+                        price,
+                        stock,
+                        expiry: expiry || null
+                    };
+                }
+                showMessage('medicine-message', 'Medicine updated successfully!', 'success');
+            } else {
+                // Add new medicine
+                const newMedicine = {
+                    id: Date.now().toString(),
+                    name,
+                    code,
+                    price,
+                    stock,
+                    expiry: expiry || null
+                };
+                medicines.push(newMedicine);
+                showMessage('medicine-message', 'Medicine added successfully!', 'success');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('medicalShopMedicines', JSON.stringify(medicines));
+            
+            // Refresh tables and dropdowns
+            renderMedicineTable();
+            populateMedicineDropdown();
+            clearMedicineForm();
+        }
+        
+        function editMedicine(id) {
+            const medicine = medicines.find(m => m.id === id);
+            if (medicine) {
+                editingMedicineId = medicine.id;
+                document.getElementById('medicine-name').value = medicine.name;
+                document.getElementById('medicine-code').value = medicine.code;
+                document.getElementById('medicine-price').value = medicine.price;
+                document.getElementById('medicine-stock').value = medicine.stock;
+                document.getElementById('medicine-expiry').value = medicine.expiry || '';
+                
+                // Scroll to form
+                document.getElementById('medicine-form').scrollIntoView();
+            }
+        }
+        
+        function deleteMedicine(id) {
+            if (confirm('Are you sure you want to delete this medicine?')) {
+                medicines = medicines.filter(m => m.id !== id);
+                localStorage.setItem('medicalShopMedicines', JSON.stringify(medicines));
+                renderMedicineTable();
+                populateMedicineDropdown();
+                showMessage('medicine-message', 'Medicine deleted successfully!', 'success');
+            }
+        }
+        
+        function clearMedicineForm() {
+            document.getElementById('medicine-name').value = '';
+            document.getElementById('medicine-code').value = '';
+            document.getElementById('medicine-price').value = '';
+            document.getElementById('medicine-stock').value = '';
+            document.getElementById('medicine-expiry').value = '';
+            editingMedicineId = null;
+            document.getElementById('medicine-message').textContent = '';
+        }
+        
+        function renderMedicineTable() {
+            const medicineList = document.getElementById('medicine-list');
+            medicineList.innerHTML = '';
+            
+            medicines.forEach(medicine => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${medicine.id}</td>
+                    <td>${medicine.name}</td>
+                    <td>${medicine.code}</td>
+                    <td>₹${medicine.price.toFixed(2)}</td>
+                    <td>${medicine.stock}</td>
+                    <td>${medicine.expiry || '-'}</td>
+                    <td>
+                        <button onclick="editMedicine('${medicine.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteMedicine('${medicine.id}')">Delete</button>
+                    </td>
+                `;
+                medicineList.appendChild(row);
+            });
+        }
+        
+        function searchMedicines() {
+            const searchTerm = document.getElementById('medicine-search').value.toLowerCase();
+            const filteredMedicines = medicines.filter(medicine => 
+                medicine.name.toLowerCase().includes(searchTerm) || 
+                medicine.code.toLowerCase().includes(searchTerm)
+            );
+            
+            const medicineList = document.getElementById('medicine-list');
+            medicineList.innerHTML = '';
+            
+            filteredMedicines.forEach(medicine => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${medicine.id}</td>
+                    <td>${medicine.name}</td>
+                    <td>${medicine.code}</td>
+                    <td>₹${medicine.price.toFixed(2)}</td>
+                    <td>${medicine.stock}</td>
+                    <td>${medicine.expiry || '-'}</td>
+                    <td>
+                        <button onclick="editMedicine('${medicine.id}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteMedicine('${medicine.id}')">Delete</button>
+                    </td>
+                `;
+                medicineList.appendChild(row);
+            });
+        }
+        
+        // Billing functions
+        function populateCustomerDropdown() {
+            const dropdown = document.getElementById('bill-customer');
+            dropdown.innerHTML = '<option value="">Select Customer</option>';
+            
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = `${customer.name} (${customer.phone})`;
+                dropdown.appendChild(option);
+            });
+        }
+        
+        function populateMedicineDropdown() {
+            const dropdown = document.getElementById('bill-medicine');
+            dropdown.innerHTML = '<option value="">Select Medicine</option>';
+            
+            medicines.forEach(medicine => {
+                if (medicine.stock > 0) {
+                    const option = document.createElement('option');
+                    option.value = medicine.id;
+                    option.textContent = `${medicine.name} (₹${medicine.price.toFixed(2)}) - Stock: ${medicine.stock}`;
+                    dropdown.appendChild(option);
+                }
+            });
+        }
+        
+        function loadCustomerDetails() {
+            // You can implement this to auto-fill customer details if needed
+        }
+        
+        function addMedicineToBill() {
+            const medicineId = document.getElementById('bill-medicine').value;
+            if (!medicineId) return;
+            
+            const medicine = medicines.find(m => m.id === medicineId);
+            if (!medicine) return;
+            
+            // Check if medicine is already in the bill
+            const existingItem = currentBillItems.find(item => item.medicineId === medicineId);
+            
+            if (existingItem) {
+                // Increase quantity if stock allows
+                if (existingItem.quantity < medicine.stock) {
+                    existingItem.quantity++;
+                    existingItem.total = existingItem.quantity * existingItem.price;
+                } else {
+                    showMessage('bill-message', 'Cannot add more than available stock!', 'error');
+                    return;
+                }
+            } else {
+                // Add new item to bill
+                currentBillItems.push({
+                    medicineId,
+                    name: medicine.name,
+                    price: medicine.price,
+                    quantity: 1,
+                    total: medicine.price
+                });
+            }
+            
+            renderBillItems();
+            calculateBillTotal();
+        }
+        
+        function removeBillItem(index) {
+            currentBillItems.splice(index, 1);
+            renderBillItems();
+            calculateBillTotal();
+        }
+        
+        function updateBillItemQuantity(index, quantity) {
+            const item = currentBillItems[index];
+            const medicine = medicines.find(m => m.id === item.medicineId);
+            
+            if (!medicine) return;
+            
+            quantity = parseInt(quantity);
+            if (isNaN(quantity) || quantity <= 0) {
+                quantity = 1;
+            }
+            
+            if (quantity > medicine.stock) {
+                showMessage('bill-message', 'Cannot add more than available stock!', 'error');
+                quantity = medicine.stock;
+            }
+            
+            item.quantity = quantity;
+            item.total = item.price * quantity;
+            
+            renderBillItems();
+            calculateBillTotal();
+        }
+        
+        function renderBillItems() {
+            const billItemsList = document.getElementById('bill-items-list');
+            billItemsList.innerHTML = '';
+            
+            currentBillItems.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>₹${item.price.toFixed(2)}</td>
+                    <td>
+                        <input type="number" value="${item.quantity}" min="1" 
+                               onchange="updateBillItemQuantity(${index}, this.value)">
+                    </td>
+                    <td>₹${item.total.toFixed(2)}</td>
+                    <td>
+                        <button class="delete-btn" onclick="removeBillItem(${index})">Remove</button>
+                    </td>
+                `;
+                billItemsList.appendChild(row);
+            });
+        }
+        
+        function calculateBillTotal() {
+            const subtotal = currentBillItems.reduce((sum, item) => sum + item.total, 0);
+            const discount = parseFloat(document.getElementById('bill-discount-input').value) || 0;
+            const total = subtotal - discount;
+            
+            document.getElementById('bill-subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('bill-discount').textContent = discount.toFixed(2);
+            document.getElementById('bill-total').textContent = total.toFixed(2);
+        }
+        
+        function generateBill() {
+            const customerId = document.getElementById('bill-customer').value;
+            const date = document.getElementById('bill-date').value;
+            const discount = parseFloat(document.getElementById('bill-discount-input').value) || 0;
+            
+            if (!customerId) {
+                showMessage('bill-message', 'Please select a customer!', 'error');
+                return;
+            }
+            
+            if (currentBillItems.length === 0) {
+                showMessage('bill-message', 'Please add at least one medicine to the bill!', 'error');
+                return;
+            }
+            
+            const customer = customers.find(c => c.id === customerId);
+            if (!customer) {
+                showMessage('bill-message', 'Selected customer not found!', 'error');
+                return;
+            }
+            
+            const subtotal = currentBillItems.reduce((sum, item) => sum + item.total, 0);
+            const total = subtotal - discount;
+            
+            // Create new bill
+            const newBill = {
+                id: Date.now().toString(),
+                customerId,
+                customerName: customer.name,
+                date,
+                items: [...currentBillItems],
+                subtotal,
+                discount,
+                total
+            };
+            
+            // Update medicine stock
+            currentBillItems.forEach(item => {
+                const medicineIndex = medicines.findIndex(m => m.id === item.medicineId);
+                if (medicineIndex !== -1) {
+                    medicines[medicineIndex].stock -= item.quantity;
+                }
+            });
+            
+            // Save data
+            bills.push(newBill);
+            localStorage.setItem('medicalShopBills', JSON.stringify(bills));
+            localStorage.setItem('medicalShopMedicines', JSON.stringify(medicines));
+            
+            // Refresh UI
+            renderMedicineTable();
+            populateMedicineDropdown();
+            renderBillHistoryTable();
+            clearBill();
+            
+            showMessage('bill-message', 'Bill generated successfully!', 'success');
+        }
+        
+        function clearBill() {
+            currentBillItems = [];
+            document.getElementById('bill-customer').value = '';
+            document.getElementById('bill-discount-input').value = '0';
+            document.getElementById('bill-items-list').innerHTML = '';
+            document.getElementById('bill-subtotal').textContent = '0.00';
+            document.getElementById('bill-discount').textContent = '0.00';
+            document.getElementById('bill-total').textContent = '0.00';
+            document.getElementById('bill-message').textContent = '';
+        }
+        
+        // Bill history functions
+        function renderBillHistoryTable() {
+            const billHistoryList = document.getElementById('bill-history-list');
+            billHistoryList.innerHTML = '';
+            
+            bills.forEach(bill => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${bill.id}</td>
+                    <td>${bill.date}</td>
+                    <td>${bill.customerName}</td>
+                    <td>₹${bill.total.toFixed(2)}</td>
+                    <td>
+                        <button onclick="viewBill('${bill.id}')">View</button>
+                        <button onclick="printBill('${bill.id}')">Print</button>
+                    </td>
+                `;
+                billHistoryList.appendChild(row);
+            });
+        }
+        
+        function searchBills() {
+            const searchTerm = document.getElementById('bill-history-search').value.toLowerCase();
+            const filteredBills = bills.filter(bill => 
+                bill.customerName.toLowerCase().includes(searchTerm) || 
+                bill.id.includes(searchTerm)
+            );
+            
+            const billHistoryList = document.getElementById('bill-history-list');
+            billHistoryList.innerHTML = '';
+            
+            filteredBills.forEach(bill => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${bill.id}</td>
+                    <td>${bill.date}</td>
+                    <td>${bill.customerName}</td>
+                    <td>₹${bill.total.toFixed(2)}</td>
+                    <td>
+                        <button onclick="viewBill('${bill.id}')">View</button>
+                        <button onclick="printBill('${bill.id}')">Print</button>
+                    </td>
+                `;
+                billHistoryList.appendChild(row);
+            });
+        }
+        
+        function viewBill(billId) {
+            const bill = bills.find(b => b.id === billId);
+            if (!bill) return;
+            
+            // Create a modal or new window to display the bill
+            const billWindow = window.open('', '_blank', 'width=800,height=600');
+            billWindow.document.write(`
+                <html>
+                <head>
+                    <title>Bill ${bill.id}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .bill-header { text-align: center; margin-bottom: 30px; }
+                        .bill-details { margin-bottom: 20px; }
+                        .bill-items table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        .bill-items th, .bill-items td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        .bill-total { text-align: right; font-weight: bold; font-size: 1.2em; }
+                        .print-btn { margin-top: 20px; padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+                    </style>
+                </head>
+                <body>
+                    <div class="bill-header">
+                        <h1>MediCare Pharmacy</h1>
+                        <p>123 Medical Street, Health City</p>
+                        <p>Phone: 9876543210 | GSTIN: 22ABCDE1234F1Z5</p>
+                    </div>
+                    
+                    <div class="bill-details">
+                        <p><strong>Bill No:</strong> ${bill.id}</p>
+                        <p><strong>Date:</strong> ${bill.date}</p>
+                        <p><strong>Customer:</strong> ${bill.customerName}</p>
+                    </div>
+                    
+                    <div class="bill-items">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${bill.items.map(item => `
+                                    <tr>
+                                        <td>${item.name}</td>
+                                        <td>₹${item.price.toFixed(2)}</td>
+                                        <td>${item.quantity}</td>
+                                        <td>₹${item.total.toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="bill-total">
+                        <p>Subtotal: ₹${bill.subtotal.toFixed(2)}</p>
+                        <p>Discount: ₹${bill.discount.toFixed(2)}</p>
+                        <p><strong>Total: ₹${bill.total.toFixed(2)}</strong></p>
+                    </div>
+                    
+                    <div style="margin-top: 40px; text-align: center;">
+                        <p>Thank you for your purchase!</p>
+                        <p>Please visit again</p>
+                    </div>
+                    
+                    <button class="print-btn" onclick="window.print()">Print Bill</button>
+                </body>
+                </html>
+            `);
+            billWindow.document.close();
+        }
+        
+        function printBill(billId) {
+            viewBill(billId);
+            // The print button is included in the viewBill function's output
+        }
+        
+        // Utility functions
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = type + '-message';
+            
+            // Clear message after 3 seconds
+            setTimeout(() => {
+                element.textContent = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
