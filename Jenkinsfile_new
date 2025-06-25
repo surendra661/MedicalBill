@@ -36,7 +36,7 @@ pipeline {
             }
         }
 
-        stage('Code Quality - SonarQube') {
+        stage('CQA') {
             steps {
                 withSonarQubeEnv('mysonar') {
                     withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
