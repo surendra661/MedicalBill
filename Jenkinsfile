@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
+                 git branch: 'main' git credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
             }
         }
         stage('Build') {
