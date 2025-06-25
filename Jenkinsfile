@@ -23,5 +23,10 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage('clone') {
+            steps {
+                 git credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
+            }
+        }
     }
 }
