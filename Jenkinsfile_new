@@ -5,7 +5,7 @@ pipeline {
     }
 
     stages {
-        stage('Clone') {
+        stage('Code') {
             steps {
                 git(
                     branch: 'main',
