@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     tools {
         maven 'mymaven'
     }
@@ -24,14 +25,15 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo "Running unit test"
+                echo "Running unit tests"
                 sh 'mvn test'
             }
         }
+
         stage('CQA') {
             steps {
                 withSonarQubeEnv('mysonar') {
-                     sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=suri -Dsonar.projectName="suri-project"'
+                    sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=suri -Dsonar.projectName="suri-project"'
                 }
             }
         }
