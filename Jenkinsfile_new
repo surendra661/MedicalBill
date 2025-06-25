@@ -28,5 +28,11 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        stage('CQA') {
+            steps {
+                withSonarQubeEnv('MySonar') {
+                    sh 'sonar-scanner -Dsonar.projectKey=MedicalBill -Dsonar.sources=. -Dsonar.java.binaries=target'
+            }
+        }
     }
 }
