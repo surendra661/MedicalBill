@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        mvn 'mymaven'
+    }
 
     stages {
         stage('Clone') {
