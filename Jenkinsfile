@@ -1,19 +1,22 @@
 pipeline {
     agent any
+
     stages {
         stage('Clone') {
             steps {
-                branch: 'main', git credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
+                git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
             }
         }
+
         stage('Build') {
             steps {
-                echo "Build step"
+                echo "Building project..."
             }
         }
+
         stage('Test') {
             steps {
-                echo "Test step"
+                echo "Running tests..."
             }
         }
     }
