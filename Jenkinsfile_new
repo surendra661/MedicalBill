@@ -30,8 +30,9 @@ pipeline {
         }
         stage('CQA') {
             steps {
-                withSonarQubeEnv('MySonar') {
-                    sh 'sonar-scanner -Dsonar.projectKey=MedicalBill -Dsonar.sources=. -Dsonar.java.binaries=target'
+                withSonarQubeEnv('mysonar') {
+                     sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=suri -Dsonar.projectName="suri-project"'
+                }
             }
         }
     }
