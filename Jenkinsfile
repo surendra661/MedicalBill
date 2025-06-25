@@ -1,31 +1,19 @@
 pipeline {
     agent any
-
-    tools {
-        maven 'mymaven'
-    }
-
     stages {
-        stage('code') {
+        stage('Clone') {
             steps {
-                git 'https://github.com/surendra661/medical-bill.git'
+                git credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
             }
         }
-
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                echo "Build step"
             }
         }
-
         stage('Test') {
             steps {
-                sh 'mvn test'
-            }
-        }
-        stage('clone') {
-            steps {
-                 git credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
+                echo "Test step"
             }
         }
     }
