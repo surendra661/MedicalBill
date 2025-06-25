@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stage('code') {
             steps {
                 git 'https://github.com/surendra661/medical-bill.git'
             }
