@@ -4,19 +4,25 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/surendra661/MedicalBill.git'
+                git(
+                    branch: 'main',
+                    credentialsId: 'github-token',
+                    url: 'https://github.com/surendra661/MedicalBill.git'
+                )
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building project..."
+                echo "Building project with Maven"
+                sh 'mvn clean install'
             }
         }
 
         stage('Test') {
             steps {
-                echo "Running tests..."
+                echo "Running unit tests"
+                sh 'mvn test'
             }
         }
     }
