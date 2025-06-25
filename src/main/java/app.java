@@ -1,9 +1,12 @@
+package com.medical;
+
 public class App {
-    public int add(int a, int b) {
-        return a + b;
+
+    public int calculateTotal(int quantity, int price) {
+        return quantity * price;
     }
 
-    public String billingMessage() {
-        return "Billing system active!";
+    public String welcomeMessage() {
+        return "Welcome to Medical Billing System!";
     }
 }

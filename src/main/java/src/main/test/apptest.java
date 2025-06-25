@@ -1,17 +1,21 @@
+
+package com.medical;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AppTest {
 
     @Test
-    public void testAddition() {
+    public void testCalculateTotal() {
         App app = new App();
-        assertEquals(5, app.add(2, 3));
+        int total = app.calculateTotal(5, 20);
+        assertEquals(100, total);
     }
 
     @Test
-    public void testBillingMessage() {
+    public void testWelcomeMessage() {
         App app = new App();
-        assertEquals("Billing system active!", app.billingMessage());
+        assertEquals("Welcome to Medical Billing System!", app.welcomeMessage());
     }
 }
