@@ -2,10 +2,16 @@ pipeline {
     agent any
 
     tools {
-        maven 'mymaven'
+        maven 'mymaven' 
+    }
+
+    environment {
+        SONAR_PROJECT_KEY = 'suri'
+        SONAR_PROJECT_NAME = 'suri-project'
     }
 
     stages {
+
         stage('Code') {
             steps {
                 git(
@@ -18,22 +24,29 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo "Building project with Maven"
+                echo "Building with Maven"
                 sh 'mvn clean install'
             }
         }
 
         stage('Test') {
             steps {
-                echo "Running unit tests"
+                echo "Running Unit Tests"
                 sh 'mvn test'
             }
         }
 
-        stage('CQA') {
+        stage('Code Quality - SonarQube') {
             steps {
                 withSonarQubeEnv('mysonar') {
-                    sh 'mvn clean verify sonar:sonar -Dsonar.projectKey=suri -Dsonar.projectName="suri-project"'
+                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                        sh """
+                            mvn clean verify sonar:sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                            -Dsonar.projectName='${SONAR_PROJECT_NAME}' \
+                            -Dsonar.token=$SONAR_TOKEN
+                        """
+                    }
                 }
             }
         }
